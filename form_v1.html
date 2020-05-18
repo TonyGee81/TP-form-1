@@ -71,13 +71,7 @@
                 <div className="form-group">
                     <label htmlFor="select">{this.props.title}</label>
                     <select id="select">
-                        {
-                            this.props.choices.map((value, index) => {
-                                return (
-                                    <option key={index} value={index}>{value}</option>
-                                )
-                            })
-                        }
+                        {this.props.children}
                     </select>
                 </div>
             )
@@ -91,17 +85,7 @@
                 <div className="form-check">
 
                     <h3>{this.props.title}</h3>
-                    {
-                        this.props.choices.map((value, index) => {
-                            return (
-                                <div key={index}>
-                                    <label htmlFor={value}>
-                                        <input type="radio" id={value} name={this.props.name} />
-                                    {value}</label>
-                                </div>
-                            )
-                        })
-                    }
+                    {this.props.children}
                 </div>
             )
         }
@@ -139,9 +123,29 @@
         render() {
             switch (this.props.option.type) {
                 case 'select':
-                    return <InputSelect {...this.props.option} />;
+                    return <InputSelect>
+                        {
+                            this.props.option.choices.map((value, index) => {
+                                return (
+                                    <option key={index} value={index}>{value}</option>
+                                )
+                            })
+                        }
+                    </InputSelect>;
                 case 'radio':
-                    return <InputRadio {...this.props.option} />;
+                    return <InputRadio>
+                        {
+                            this.props.option.choices.map((value, index) => {
+                                return (
+                                    <div key={index}>
+                                        <label htmlFor={value}>
+                                            <input type="radio" id={value} name={this.props.name} />
+                                            {value}</label>
+                                    </div>
+                                )
+                            })
+                        }
+                    </InputRadio>;
                 default:
                     return null;
             }
