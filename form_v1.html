@@ -66,12 +66,17 @@
 
     class InputSelect extends React.Component {
 
+        handleChange = (e) => {
+            this.props.functionParent(e.target.value);
+            e.preventDefault();
+        }
+
         render() {
             return (
                 <div className="form-group">
                     <label htmlFor="select">{this.props.title}</label>
                     <br />
-                    <select id="select">
+                    <select id="select" onChange={this.handleChange}>
                         {this.props.children}
                     </select>
                 </div>
@@ -94,10 +99,15 @@
 
     class Form extends React.Component {
 
+
+        handleSubmit = (e) => {
+
+        }
+
         render() {
             return (
                 <div>
-                    <form>
+                    <form onSubmit={this.handleSubmit}>
                         {
                             Object.keys(questions).map(function (value, index) {
                                 return (
@@ -119,12 +129,25 @@
 
         constructor(props) {
             super(props);
+
+            this.state = ({
+                selectOption : 0
+            })
+        }
+
+        selectFunction = (optionValue) => {
+            this.setState({
+                selectOption: optionValue
+            })
+
+
         }
 
         render() {
+            console.log(this.state.selectOption)
             switch (this.props.option.type) {
                 case 'select':
-                    return <InputSelect title={this.props.option.title}>
+                    return <InputSelect title={this.props.option.title} functionParent={this.selectFunction}>
                         {
                             this.props.option.choices.map((value, index) => {
                                 return (
@@ -140,7 +163,7 @@
                                 return (
                                     <div key={index}>
                                         <label htmlFor={value}>
-                                            <input type="radio" id={value} name={this.props.option.name} />&nbsp;{value}</label>
+                                            <input type="radio" id={value} value={index} name={this.props.option.name} />&nbsp;{value}</label>
                                     </div>
                                 )
                             })
@@ -152,7 +175,7 @@
         }
     }
 
-    
+
     ReactDOM.render(
         <Form/>,
         document.getElementById("root")
