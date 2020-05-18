@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Hello React</title>
-    <!--    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>-->
-    <!--    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>-->
-    <!--    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>-->
-    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+        <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <script src="../../js/react.development.js"></script>
-    <script src="../../js/react-dom.development.js"></script>
-    <script src="../../js/babel.min.js"></script>
+<!--    <script src="../../js/react.development.js"></script>-->
+<!--    <script src="../../js/react-dom.development.js"></script>-->
+<!--    <script src="../../js/babel.min.js"></script>-->
 
-    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css" media="all"/>
+<!--    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css" media="all"/>-->
 
 </head>
 
@@ -54,6 +54,7 @@
     class Input extends React.Component {
 
         render() {
+            this.setState({numberQuestion : this.state.numberQuestion++})
             return (
                 <div className="form-group">
                     <label htmlFor="_input">{this.props.title}</label>
@@ -72,13 +73,14 @@
         }
 
         render() {
+
             return (
                 <div className="form-group">
                     <label htmlFor="select">{this.props.title}</label>
-                    <br />
-                    <select id="select" onChange={this.handleChange}>
+                    <br/>
+
                         {this.props.children}
-                    </select>
+
                 </div>
             )
         }
@@ -87,6 +89,7 @@
     class InputRadio extends React.Component {
 
         render() {
+
             return (
                 <div className="form-check">
 
@@ -99,12 +102,16 @@
 
     class Form extends React.Component {
 
+        constructor(props) {
+            super(props);
+        }
 
         handleSubmit = (e) => {
 
         }
 
         render() {
+
             return (
                 <div>
                     <form onSubmit={this.handleSubmit}>
@@ -113,7 +120,7 @@
                                 return (
                                     <div key={index}>
                                         <h1>{value}</h1>
-                                        <Wrapper option={questions[value]}/>
+                                        <Wrapper option={questions[value]} numAnswer={index}/>
                                     </div>
                                 )
                             })
@@ -129,41 +136,74 @@
 
         constructor(props) {
             super(props);
-
             this.state = ({
-                selectOption : 0
+                numberQuestion : 0,
+                answerQ: [
+                    { "question" : 0, "answer" : 0} ,
+                    { "question" : 1, "answer" : 0}
+                    ]
+
             })
         }
 
-        selectFunction = (optionValue) => {
-            this.setState({
-                selectOption: optionValue
-            })
+        answerQuestion = (e) => {
 
 
+            // this.setState({
+            //     answerQ: [...this.state.answerQ, {parseInt(questionLevel):questionAnswer}],
+            // })
+
+
+console.log(parseInt(e.target.dataset.question));
+console.log(e.target.value);
+            if (!this.state.answerQ.find( question => question.question === parseInt(e.target.dataset.question) )) {
+                console.log('=>' + e.target.dataset.question);
+                // const question = parseInt(e.target.dataset.question);
+                // console.log(question);
+                this.setState({
+                    answerQ: [...this.state.answerQ, { "question" : parseInt(e.target.dataset.question) , "answer" : e.target.value } ]
+                })
+            } else {
+                console.log('existe')
+                // this.setState({
+                //     answerQ: [...this.state.answerQ, { "question" : parseInt(e.target.dataset.question) , "answer" : e.target.value } ],
+                // })
+            }
         }
+
 
         render() {
-            console.log(this.state.selectOption)
+
+            console.log(this.state.answerQ)
             switch (this.props.option.type) {
                 case 'select':
-                    return <InputSelect title={this.props.option.title} functionParent={this.selectFunction}>
+                    return <InputSelect title={this.props.option.title}>
+                        <select id="select" onChange={this.answerQuestion}>
                         {
+
                             this.props.option.choices.map((value, index) => {
                                 return (
-                                    <option key={index} value={index}>{value}</option>
+                                    <option key={index}
+                                            value={index}
+                                            data-question={this.props.numAnswer}>{value}</option>
                                 )
                             })
                         }
+                        </select>
+
                     </InputSelect>;
+
                 case 'radio':
-                    return <InputRadio title={this.props.option.title}>
+                    return <InputRadio title={this.props.option.title} >
                         {
                             this.props.option.choices.map((value, index) => {
                                 return (
                                     <div key={index}>
                                         <label htmlFor={value}>
-                                            <input type="radio" id={value} value={index} name={this.props.option.name} />&nbsp;{value}</label>
+                                            <input type="radio" id={value} value={index}
+                                                   onChange={this.answerQuestion}
+                                                   data-question={this.props.numAnswer}
+                                                   name={this.props.option.name}/>&nbsp;{value}</label>
                                     </div>
                                 )
                             })
@@ -173,6 +213,7 @@
                     return null;
             }
         }
+
     }
 
 
