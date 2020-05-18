@@ -1,1 +1,170 @@
-<!DOCTYPE html><html><head>    <meta charset="UTF-8"/>    <title>Hello React</title>    <!--    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>-->    <!--    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>-->    <!--    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>-->    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->    <script src="../../js/react.development.js"></script>    <script src="../../js/react-dom.development.js"></script>    <script src="../../js/babel.min.js"></script>    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css" media="all"/></head><body><div id="root"></div><!-- compilation JSX => JS --><script type="text/babel">    const questions = {        'symfony': {            title: "Symfony design pattern",            choices: ['MMV', 'MVC', 'MMVV'],            response: 1,            type: "select",            name: "symfony",            feedback: 'Symfony est basé sur le pattern MVC'        },        'react': {            title: "React est-il un framework ?",            choices: ['yes', 'no'],            response: 1,            type: "radio",            name: "react",            feedback: "React est une librairie"        },        'jsx': {            title: "JSX c'est quoi ?",            choices: ['JSX est un langage compilé', 'JSX est un sur-ensemble développé par Facebook'],            response: 1,            type: "radio",            name: "jsx",            feedback: 'JSX est un sur ensemble à JS'        }    }    let score = 0;    class Input extends React.Component {        render() {            return (                <div className="form-group">                    <label htmlFor="_input">{this.props.title}</label>                    <input type="text" className="form-control" id="_input"                           aria-describedby="emailHelp" placeholder={this.props.title}/>                </div>            )        }    }    class InputSelect extends React.Component {        render() {            return (                <div className="form-group">                    <label htmlFor="select">{this.props.title}</label>                    <select id="select">                        {                            this.props.choices.map((value, index) => {                                return (                                    <option key={index} value={index}>{value}</option>                                )                            })                        }                    </select>                </div>            )        }    }    class InputRadio extends React.Component {        render() {            return (                <div className="form-check">                    <h3>{this.props.title}</h3>                    {                        this.props.choices.map((value, index) => {                            return (                                <div key={index}>                                    <label htmlFor={value}>                                        <input type="radio" id={value} name={this.props.name} />                                    {value}</label>                                </div>                            )                        })                    }                </div>            )        }    }    class Form extends React.Component {        render() {            return (                <div>                    <form>                        {                            Object.keys(questions).map(function (value, index) {                                return (                                    <div key={index}>                                        <h1>{value}</h1>                                        <Wrapper option={questions[value]}/>                                    </div>                                )                            })                        }                        <button type="submit" className="btn btn-primary">Submit</button>                    </form>                </div>            )        }    }    class Wrapper extends React.Component {        constructor(props) {            super(props);        }        render() {            switch (this.props.option.type) {                case 'select':                    return <InputSelect {...this.props.option} />;                case 'radio':                    return <InputRadio {...this.props.option} />;                default:                    return null;            }        }    }    class App extends React.Component {        constructor(props) {            super(props);        }        render() {            return (                <Form/>            )        }    }    ReactDOM.render(        <App/>,        document.getElementById("root")    );</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Hello React</title>
+    <!--    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>-->
+    <!--    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>-->
+    <!--    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>-->
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+
+    <script src="../../js/react.development.js"></script>
+    <script src="../../js/react-dom.development.js"></script>
+    <script src="../../js/babel.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css" media="all"/>
+
+</head>
+
+<body>
+<div id="root"></div>
+
+<!-- compilation JSX => JS -->
+<script type="text/babel">
+
+    const questions = {
+        'symfony': {
+            title: "Symfony design pattern",
+            choices: ['MMV', 'MVC', 'MMVV'],
+            response: 1,
+            type: "select",
+            name: "symfony",
+            feedback: 'Symfony est basé sur le pattern MVC'
+        },
+        'react': {
+            title: "React est-il un framework ?",
+            choices: ['yes', 'no'],
+            response: 1,
+            type: "radio",
+            name: "react",
+            feedback: "React est une librairie"
+        },
+        'jsx': {
+            title: "JSX c'est quoi ?",
+            choices: ['JSX est un langage compilé', 'JSX est un sur-ensemble développé par Facebook'],
+            response: 1,
+            type: "radio",
+            name: "jsx",
+            feedback: 'JSX est un sur ensemble à JS'
+        }
+    }
+
+    let score = 0;
+
+    class Input extends React.Component {
+
+        render() {
+            return (
+                <div className="form-group">
+                    <label htmlFor="_input">{this.props.title}</label>
+                    <input type="text" className="form-control" id="_input"
+                           aria-describedby="emailHelp" placeholder={this.props.title}/>
+                </div>
+            )
+        }
+    }
+
+    class InputSelect extends React.Component {
+
+        render() {
+            return (
+                <div className="form-group">
+                    <label htmlFor="select">{this.props.title}</label>
+                    <select id="select">
+                        {
+                            this.props.choices.map((value, index) => {
+                                return (
+                                    <option key={index} value={index}>{value}</option>
+                                )
+                            })
+                        }
+                    </select>
+                </div>
+            )
+        }
+    }
+
+    class InputRadio extends React.Component {
+
+        render() {
+            return (
+                <div className="form-check">
+
+                    <h3>{this.props.title}</h3>
+                    {
+                        this.props.choices.map((value, index) => {
+                            return (
+                                <div key={index}>
+                                    <label htmlFor={value}>
+                                        <input type="radio" id={value} name={this.props.name} />
+                                    {value}</label>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            )
+        }
+    }
+
+    class Form extends React.Component {
+
+        render() {
+            return (
+                <div>
+                    <form>
+                        {
+                            Object.keys(questions).map(function (value, index) {
+                                return (
+                                    <div key={index}>
+                                        <h1>{value}</h1>
+                                        <Wrapper option={questions[value]}/>
+                                    </div>
+                                )
+                            })
+                        }
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            )
+        }
+    }
+
+    class Wrapper extends React.Component {
+
+        constructor(props) {
+            super(props);
+        }
+
+        render() {
+            switch (this.props.option.type) {
+                case 'select':
+                    return <InputSelect {...this.props.option} />;
+                case 'radio':
+                    return <InputRadio {...this.props.option} />;
+                default:
+                    return null;
+            }
+        }
+    }
+
+    class App extends React.Component {
+
+        constructor(props) {
+            super(props);
+        }
+
+        render() {
+            return (
+                <Form/>
+            )
+        }
+    }
+
+    ReactDOM.render(
+        <App/>,
+        document.getElementById("root")
+    );
+</script>
+</body>
+</html>
