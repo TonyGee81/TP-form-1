@@ -70,6 +70,7 @@
             return (
                 <div className="form-group">
                     <label htmlFor="select">{this.props.title}</label>
+                    <br />
                     <select id="select">
                         {this.props.children}
                     </select>
@@ -123,7 +124,7 @@
         render() {
             switch (this.props.option.type) {
                 case 'select':
-                    return <InputSelect>
+                    return <InputSelect title={this.props.option.title}>
                         {
                             this.props.option.choices.map((value, index) => {
                                 return (
@@ -133,13 +134,13 @@
                         }
                     </InputSelect>;
                 case 'radio':
-                    return <InputRadio>
+                    return <InputRadio title={this.props.option.title}>
                         {
                             this.props.option.choices.map((value, index) => {
                                 return (
                                     <div key={index}>
                                         <label htmlFor={value}>
-                                            <input type="radio" id={value} name={this.props.name} />
+                                            <input type="radio" id={value} name={this.props.option.name} />
                                             {value}</label>
                                     </div>
                                 )
