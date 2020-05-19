@@ -97,6 +97,9 @@
                         <br/>
                         {this.props.children}
                     </div>
+                    <div className="alert alert-danger">
+                        {this.props.feedback}
+                    </div>
                 </div>
             )
         }
@@ -113,6 +116,9 @@
                     </div>
                     <div className="card-body">
                         {this.props.children}
+                    </div>
+                    <div className="alert alert-danger">
+                        {this.props.feedback}
                     </div>
                 </div>
             )
@@ -239,10 +245,7 @@
                     )
                 }))
             }
-
-
         }
-
 
         render (){
             return (
@@ -257,7 +260,10 @@
                                 case 'select':
                                     return (
                                         <Wrapper classes="form-check" key={index}>
-                                            <InputSelect title={arrayQuestion.title}
+                                            <InputSelect
+                                                title={arrayQuestion.title}
+                                                feedback={arrayQuestion.feedback}
+                                                feedbackActive={0}
                                             >
                                                 <select
                                                     id="select"
@@ -283,6 +289,8 @@
                                     return <Wrapper classes="form-check" key={index}>
                                         <InputRadio
                                             title={arrayQuestion.title}
+                                            feedback={arrayQuestion.feedback}
+                                            feedbackActive={0}
                                         >
                                             {
                                                 arrayQuestion.choices.map((value, level) => {
