@@ -97,7 +97,7 @@
                         <br/>
                         {this.props.children}
                     </div>
-                    <div className="alert alert-danger">
+                    <div className={ 'alert alert-danger ' + ( this.props.feedbackActive ? "" : "hide" ) }>
                         {this.props.feedback}
                     </div>
                 </div>
@@ -117,7 +117,7 @@
                     <div className="card-body">
                         {this.props.children}
                     </div>
-                    <div className="alert alert-danger">
+                    <div className={ 'alert alert-danger ' + ( this.props.feedbackActive ? "" : "hide" ) }>
                         {this.props.feedback}
                     </div>
                 </div>
