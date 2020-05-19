@@ -14,6 +14,11 @@
     <script src="../../js/babel.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css" media="all"/>
+    <style>
+        .hide{
+            display: none;
+        }
+    </style>
 
 </head>
 
@@ -56,6 +61,11 @@
             feedback: 'JSX est un sur ensemble à JS'
         }
     }
+
+    const myArray = Object.keys(questions).map(function(key) {
+        return [key, questions[key]];
+    });
+
 
     let score = 0;
 
@@ -123,14 +133,29 @@
         }
     }
 
+    class Result extends React.Component {
+
+        render(){
+            return(
+                <div className={this.props.hidden}>
+                    <div className="card">
+                        <div className="card-header">VOTRE SCORE</div>
+                        <div className="card-body">{ score }</div>
+                    </div>
+                </div>
+
+            )
+        }
+    }
+
     class Form extends React.Component {
 
         constructor(props) {
             super(props);
             this.state = ({
-                formCompleted : false
-            })
-
+                formCompleted : false,
+                formFinish : false
+            });
         }
 
         handleSubmit = (e) => {
@@ -143,8 +168,15 @@
                     formCompleted : false
                 })
 
-               
+                this.props.answers.map( item => {
+                    if (myArray[item.question][1].response === item.answer) {
+                        score++;
+                    }
+                })
 
+                this.setState({
+                    formFinish : true
+                })
 
             }
 
@@ -154,12 +186,15 @@
         render() {
             return (
                 <div>
-                    { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à toutes les questions !</div> }
+                    <Result hidden={this.state.formFinish ? '' : 'hide' }/>
+                    <div className={this.state.formFinish ? 'hide' : ''}>
+                        { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à toutes les questions !</div> }
 
-                    <form onSubmit={this.handleSubmit}>
-                        {this.props.children}
-                        <button type="submit" className="btn btn-primary">Submit</button>
-                    </form>
+                        <form onSubmit={this.handleSubmit}>
+                            {this.props.children}
+                            <button type="submit" className="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
                 </div>
             )
         }
@@ -173,10 +208,6 @@
                 numberQuestion : 0,
                 answerQ: []
             })
-
-            this.myArray = Object.keys(questions).map(function(key) {
-                return [key, questions[key]];
-            });
 
         }
 
@@ -201,7 +232,7 @@
 
         render (){
             return (
-                <Form answers={this.state.answerQ} nbrAnswer={this.myArray.length}>
+                <Form answers={this.state.answerQ} nbrAnswer={myArray.length}>
                     {
                         Object.keys(questions).map((value, index)  => {
 
@@ -209,7 +240,6 @@
 
                             switch (ArrayQuestion.type) {
                                 case 'select':
-                                    console.log(index);
                                     return (
                                         <Wrapper classes="form-check" key={index}>
                                             <InputSelect title={ArrayQuestion.title}>
@@ -218,6 +248,7 @@
                                                     onChange={this.answerQuestion}
                                                     data-question={index}
                                                 >
+                                                    <option value="...">...</option>
                                                     {
                                                         ArrayQuestion.choices.map((value, level) => {
                                                             return (
@@ -233,7 +264,6 @@
                                     );
 
                                 case 'radio':
-                                    console.log(index);
                                     return <Wrapper classes="form-check" key={index}>
                                         <InputRadio title={ArrayQuestion.title} >
                                             {
