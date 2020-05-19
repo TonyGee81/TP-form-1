@@ -147,7 +147,10 @@
                             <h2>{ this.props.score }</h2>
 
                             {this.props.feedBack.map( (feed,index) => {
-                                return <div key={index} className="alert alert-danger">{feed}</div>;
+                                if ( '' !== feed){
+                                    return <div key={index} className="alert alert-danger">{feed}</div>;
+                                }
+
                             } )}
 
                         </div>
@@ -182,11 +185,13 @@
 
                 this.props.answers.map( item => {
                     if (myArray[item.question][1].response === item.answer) {
+                        this.feedBack[item.question] = '';
                         this.score++;
                     }
                     else{
 
                         this.feedBack[item.question] = myArray[item.question][1].feedback;
+                        this.props.functionParent(item.question);
                     }
                 })
 
@@ -226,7 +231,6 @@
                 answerQ: [],
                 feedBackActive: []
             })
-
         }
 
         answerQuestion = (e) => {
@@ -247,9 +251,22 @@
             }
         }
 
+        feedbackActivated = (e) => {
+            console.log(e);
+            this.setState({
+                feedBackActive: [...this.state.feedBackActive, { "feedback" : e  } ]
+            })
+        }
+
         render (){
+
+            console.log(this.state.feedBackActive);
+
             return (
-                <Form answers={this.state.answerQ} nbrAnswer={myArray.length} >
+                <Form answers={this.state.answerQ}
+                      nbrAnswer={myArray.length}
+                      functionParent={this.feedbackActivated}
+                >
                     {
                         Object.keys(questions).map((value, index)  => {
 
@@ -264,6 +281,7 @@
                                                 title={arrayQuestion.title}
                                                 feedback={arrayQuestion.feedback}
                                                 feedbackActive={0}
+
                                             >
                                                 <select
                                                     id="select"
