@@ -153,21 +153,22 @@
             //     answerQ: [...this.state.answerQ, {parseInt(questionLevel):questionAnswer}],
             // })
 
+            const Question = parseInt(e.target.dataset.question);
+            const Answer   = parseInt(e.target.value);
 
-console.log(parseInt(e.target.dataset.question));
-console.log(e.target.value);
-            if (!this.state.answerQ.find( question => question.question === parseInt(e.target.dataset.question) )) {
-                console.log('=>' + e.target.dataset.question);
-                // const question = parseInt(e.target.dataset.question);
-                // console.log(question);
+            if (!this.state.answerQ.find( question => question.question === Question )) {
                 this.setState({
-                    answerQ: [...this.state.answerQ, { "question" : parseInt(e.target.dataset.question) , "answer" : e.target.value } ]
+                    answerQ: [...this.state.answerQ, { "question" : Question , "answer" : parseInt(e.target.value) } ]
                 })
             } else {
                 console.log('existe')
-                // this.setState({
-                //     answerQ: [...this.state.answerQ, { "question" : parseInt(e.target.dataset.question) , "answer" : e.target.value } ],
-                // })
+                this.setState(prevState => ({
+
+                    answerQ: prevState.answerQ.map(
+                        el => el.question === Question ? { ...el, "answer" : parseInt(e.target.value) }: el
+                    )
+
+                }))
             }
         }
 
