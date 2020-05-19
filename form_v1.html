@@ -145,14 +145,6 @@
                         <div className="card-header">VOTRE SCORE</div>
                         <div className="card-body">
                             <h2>{ this.props.score }</h2>
-
-                            {this.props.feedBack.map( (feed,index) => {
-                                if ( '' !== feed){
-                                    return <div key={index} className="alert alert-danger">{feed}</div>;
-                                }
-
-                            } )}
-
                         </div>
                     </div>
                 </div>
@@ -170,7 +162,6 @@
                 formFinish : false
             });
             this.score = 0;
-            this.feedBack = []
         }
 
         handleSubmit = (e) => {
@@ -185,12 +176,9 @@
 
                 this.props.answers.map( item => {
                     if (myArray[item.question][1].response === item.answer) {
-                        this.feedBack[item.question] = '';
                         this.score++;
                     }
                     else{
-
-                        this.feedBack[item.question] = myArray[item.question][1].feedback;
                         this.props.functionParent(item.question);
                     }
                 })
@@ -208,13 +196,13 @@
                 <div>
                     <div>
                         <div className="wrapper form-check">
-                            <Result hidden={this.state.formFinish ? '' : 'hide' } score={this.score} feedBack={this.feedBack}/>
+                            <Result hidden={this.state.formFinish ? '' : 'hide' } score={this.score} />
                         </div>
 
                         { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à toutes les questions !</div> }
                         <form onSubmit={this.handleSubmit}>
                             {this.props.children}
-                            <button type="submit" className="btn btn-primary">Submit</button>
+                            <button type="submit" className="btn btn-primary"  disabled={this.state.formFinish ? 'disabled' : '' } >Submit</button>
                         </form>
                     </div>
                 </div>
@@ -252,15 +240,10 @@
         }
 
         feedbackActivated = (e) => {
-            console.log(e);
-            this.setState({
-                feedBackActive: [...this.state.feedBackActive, { "feedback" : e  } ]
-            })
+            this.setState((prevState, props) => ({ feedBackActive: [...prevState.feedBackActive,   e   ] }) );
         }
 
         render (){
-
-            console.log(this.state.feedBackActive);
 
             return (
                 <Form answers={this.state.answerQ}
@@ -272,7 +255,6 @@
 
                             const arrayQuestion = questions[value];
 
-
                             switch (arrayQuestion.type) {
                                 case 'select':
                                     return (
@@ -280,7 +262,7 @@
                                             <InputSelect
                                                 title={arrayQuestion.title}
                                                 feedback={arrayQuestion.feedback}
-                                                feedbackActive={0}
+                                                feedbackActive={this.state.feedBackActive.includes(index)}
 
                                             >
                                                 <select
@@ -308,7 +290,7 @@
                                         <InputRadio
                                             title={arrayQuestion.title}
                                             feedback={arrayQuestion.feedback}
-                                            feedbackActive={0}
+                                            feedbackActive={this.state.feedBackActive.includes(index)}
                                         >
                                             {
                                                 arrayQuestion.choices.map((value, level) => {
