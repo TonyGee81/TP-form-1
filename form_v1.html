@@ -3,21 +3,29 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Hello React</title>
-        <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-<!--    <script src="../../js/react.development.js"></script>-->
-<!--    <script src="../../js/react-dom.development.js"></script>-->
-<!--    <script src="../../js/babel.min.js"></script>-->
+<!--        <script src="https://unpkg.com/react@16/umd/react.development.js"></script>-->
+<!--        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>-->
+<!--        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>-->
+<!--        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
 
-<!--    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css" media="all"/>-->
+    <script src="../../js/react.development.js"></script>
+    <script src="../../js/react-dom.development.js"></script>
+    <script src="../../js/babel.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css" media="all"/>
 
 </head>
 
 <body>
-<div id="root"></div>
+<section class="row text-center">
+    <div class=" col-6 m-auto">
+        <div class=" text-left">
+            <div id="root"></div>
+        </div>
+    </div>
+</section>
+
 
 <!-- compilation JSX => JS -->
 <script type="text/babel">
@@ -52,35 +60,36 @@
     let score = 0;
 
     class Input extends React.Component {
-
         render() {
-            this.setState({numberQuestion : this.state.numberQuestion++})
+
             return (
-                <div className="form-group">
-                    <label htmlFor="_input">{this.props.title}</label>
-                    <input type="text" className="form-control" id="_input"
-                           aria-describedby="emailHelp" placeholder={this.props.title}/>
+                <div className="card">
+                    <div className="card-header">
+                        <h3>{this.props.title}</h3>
+                    </div>
+                    <div className="card-body">
+                        <label htmlFor="_input">{this.props.title}</label>
+                        <input type="text" className="form-control" id="_input"
+                               aria-describedby="emailHelp" placeholder={this.props.title}/>
+                    </div>
                 </div>
             )
         }
     }
 
     class InputSelect extends React.Component {
-
-        handleChange = (e) => {
-            this.props.functionParent(e.target.value);
-            e.preventDefault();
-        }
-
         render() {
 
             return (
-                <div className="form-group">
-                    <label htmlFor="select">{this.props.title}</label>
-                    <br/>
-
+                <div className="card">
+                    <div className="card-header">
+                        <h3>{this.props.title}</h3>
+                    </div>
+                    <div className="card-body">
+                        <label htmlFor="select">{this.props.title}</label>
+                        <br/>
                         {this.props.children}
-
+                    </div>
                 </div>
             )
         }
@@ -91,9 +100,23 @@
         render() {
 
             return (
-                <div className="form-check">
+                <div className="card">
+                    <div className="card-header">
+                        <h3>{this.props.title}</h3>
+                    </div>
+                    <div className="card-body">
+                        {this.props.children}
+                    </div>
+                </div>
+            )
+        }
+    }
 
-                    <h3>{this.props.title}</h3>
+    class Wrapper extends React.Component {
+
+        render() {
+            return(
+                <div className={ "wrapper " + this.props.classes }>
                     {this.props.children}
                 </div>
             )
@@ -104,27 +127,37 @@
 
         constructor(props) {
             super(props);
+            this.state = ({
+                formCompleted : false
+            })
+
         }
 
         handleSubmit = (e) => {
+            if (this.props.answers.length < this.props.nbrAnswer) {
+                this.setState({
+                    formCompleted : true
+                })
+            } else {
+                this.setState({
+                    formCompleted : false
+                })
 
-        }
+               
+
+
+            }
+
+            e.preventDefault();
+        };
 
         render() {
-
             return (
                 <div>
+                    { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à toutes les questions !</div> }
+
                     <form onSubmit={this.handleSubmit}>
-                        {
-                            Object.keys(questions).map(function (value, index) {
-                                return (
-                                    <div key={index}>
-                                        <h1>{value}</h1>
-                                        <Wrapper option={questions[value]} numAnswer={index}/>
-                                    </div>
-                                )
-                            })
-                        }
+                        {this.props.children}
                         <button type="submit" className="btn btn-primary">Submit</button>
                     </form>
                 </div>
@@ -132,94 +165,107 @@
         }
     }
 
-    class Wrapper extends React.Component {
+    class App extends React.Component {
 
         constructor(props) {
             super(props);
             this.state = ({
                 numberQuestion : 0,
-                answerQ: [
-                    { "question" : 0, "answer" : 0} ,
-                    { "question" : 1, "answer" : 0}
-                    ]
-
+                answerQ: []
             })
+
+            this.myArray = Object.keys(questions).map(function(key) {
+                return [key, questions[key]];
+            });
+
         }
 
+
         answerQuestion = (e) => {
-
-
-            // this.setState({
-            //     answerQ: [...this.state.answerQ, {parseInt(questionLevel):questionAnswer}],
-            // })
 
             const Question = parseInt(e.target.dataset.question);
             const Answer   = parseInt(e.target.value);
 
             if (!this.state.answerQ.find( question => question.question === Question )) {
                 this.setState({
-                    answerQ: [...this.state.answerQ, { "question" : Question , "answer" : parseInt(e.target.value) } ]
+                    answerQ: [...this.state.answerQ, { "question" : Question , "answer" : Answer } ]
                 })
             } else {
-                console.log('existe')
                 this.setState(prevState => ({
-
                     answerQ: prevState.answerQ.map(
-                        el => el.question === Question ? { ...el, "answer" : parseInt(e.target.value) }: el
+                        el => el.question === Question ? { ...el, "answer" : Answer }: el
                     )
-
                 }))
             }
         }
 
+        render (){
+            return (
+                <Form answers={this.state.answerQ} nbrAnswer={this.myArray.length}>
+                    {
+                        Object.keys(questions).map((value, index)  => {
 
-        render() {
+                            const ArrayQuestion = questions[value];
 
-            console.log(this.state.answerQ)
-            switch (this.props.option.type) {
-                case 'select':
-                    return <InputSelect title={this.props.option.title}>
-                        <select id="select" onChange={this.answerQuestion}>
-                        {
+                            switch (ArrayQuestion.type) {
+                                case 'select':
+                                    console.log(index);
+                                    return (
+                                        <Wrapper classes="form-check" key={index}>
+                                            <InputSelect title={ArrayQuestion.title}>
+                                                <select
+                                                    id="select"
+                                                    onChange={this.answerQuestion}
+                                                    data-question={index}
+                                                >
+                                                    {
+                                                        ArrayQuestion.choices.map((value, level) => {
+                                                            return (
+                                                                <option key={level}
+                                                                        value={level}
+                                                                        >{value}</option>
+                                                            )
+                                                        })
+                                                    }
+                                                </select>
+                                            </InputSelect>
+                                        </Wrapper>
+                                    );
 
-                            this.props.option.choices.map((value, index) => {
-                                return (
-                                    <option key={index}
-                                            value={index}
-                                            data-question={this.props.numAnswer}>{value}</option>
-                                )
-                            })
-                        }
-                        </select>
-
-                    </InputSelect>;
-
-                case 'radio':
-                    return <InputRadio title={this.props.option.title} >
-                        {
-                            this.props.option.choices.map((value, index) => {
-                                return (
-                                    <div key={index}>
-                                        <label htmlFor={value}>
-                                            <input type="radio" id={value} value={index}
-                                                   onChange={this.answerQuestion}
-                                                   data-question={this.props.numAnswer}
-                                                   name={this.props.option.name}/>&nbsp;{value}</label>
-                                    </div>
-                                )
-                            })
-                        }
-                    </InputRadio>;
-                default:
-                    return null;
-            }
+                                case 'radio':
+                                    console.log(index);
+                                    return <Wrapper classes="form-check" key={index}>
+                                        <InputRadio title={ArrayQuestion.title} >
+                                            {
+                                                ArrayQuestion.choices.map((value, level) => {
+                                                    return (
+                                                        <div key={level}>
+                                                            <label htmlFor={value}>
+                                                                <input type="radio"
+                                                                       id={value}
+                                                                       value={level}
+                                                                       onChange={this.answerQuestion}
+                                                                       data-question={index}
+                                                                       name={ArrayQuestion.name}/>&nbsp;{value}</label>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </InputRadio>
+                                    </Wrapper>;
+                                default:
+                                    return null;
+                            }
+                        })
+                    }
+                </Form>
+            )
         }
-
     }
 
 
     ReactDOM.render(
-        <Form/>,
+        <App/>,
         document.getElementById("root")
     );
 </script>
