@@ -66,9 +66,6 @@
         return [key, questions[key]];
     });
 
-
-    let score = 0;
-
     class Input extends React.Component {
         render() {
 
@@ -140,7 +137,14 @@
                 <div className={this.props.hidden}>
                     <div className="card">
                         <div className="card-header">VOTRE SCORE</div>
-                        <div className="card-body">{ score }</div>
+                        <div className="card-body">
+                            <h2>{ this.props.score }</h2>
+
+                            {this.props.feedBack.map( (feed,index) => {
+                                return <div key={index} className="alert alert-danger">{feed}</div>;
+                            } )}
+
+                        </div>
                     </div>
                 </div>
 
@@ -156,6 +160,8 @@
                 formCompleted : false,
                 formFinish : false
             });
+            this.score = 0;
+            this.feedBack = []
         }
 
         handleSubmit = (e) => {
@@ -170,14 +176,17 @@
 
                 this.props.answers.map( item => {
                     if (myArray[item.question][1].response === item.answer) {
-                        score++;
+                        this.score++;
+                    }
+                    else{
+
+                        this.feedBack[item.question] = myArray[item.question][1].feedback;
                     }
                 })
 
                 this.setState({
                     formFinish : true
                 })
-
             }
 
             e.preventDefault();
@@ -186,10 +195,12 @@
         render() {
             return (
                 <div>
-                    <Result hidden={this.state.formFinish ? '' : 'hide' }/>
-                    <div className={this.state.formFinish ? 'hide' : ''}>
-                        { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à toutes les questions !</div> }
+                    <div>
+                        <div className="wrapper form-check">
+                            <Result hidden={this.state.formFinish ? '' : 'hide' } score={this.score} feedBack={this.feedBack}/>
+                        </div>
 
+                        { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à toutes les questions !</div> }
                         <form onSubmit={this.handleSubmit}>
                             {this.props.children}
                             <button type="submit" className="btn btn-primary">Submit</button>
@@ -206,43 +217,48 @@
             super(props);
             this.state = ({
                 numberQuestion : 0,
-                answerQ: []
+                answerQ: [],
+                feedBackActive: []
             })
 
         }
 
-
         answerQuestion = (e) => {
 
-            const Question = parseInt(e.target.dataset.question);
-            const Answer   = parseInt(e.target.value);
+            const question = parseInt(e.target.dataset.question);
+            const answer   = parseInt(e.target.value);
 
-            if (!this.state.answerQ.find( question => question.question === Question )) {
+            if (!this.state.answerQ.find( question => question.question === question )) {
                 this.setState({
-                    answerQ: [...this.state.answerQ, { "question" : Question , "answer" : Answer } ]
+                    answerQ: [...this.state.answerQ, { "question" : question , "answer" : answer } ]
                 })
             } else {
                 this.setState(prevState => ({
                     answerQ: prevState.answerQ.map(
-                        el => el.question === Question ? { ...el, "answer" : Answer }: el
+                        el => el.question === question ? { ...el, "answer" : answer }: el
                     )
                 }))
             }
+
+
         }
+
 
         render (){
             return (
-                <Form answers={this.state.answerQ} nbrAnswer={myArray.length}>
+                <Form answers={this.state.answerQ} nbrAnswer={myArray.length} >
                     {
                         Object.keys(questions).map((value, index)  => {
 
-                            const ArrayQuestion = questions[value];
+                            const arrayQuestion = questions[value];
 
-                            switch (ArrayQuestion.type) {
+
+                            switch (arrayQuestion.type) {
                                 case 'select':
                                     return (
                                         <Wrapper classes="form-check" key={index}>
-                                            <InputSelect title={ArrayQuestion.title}>
+                                            <InputSelect title={arrayQuestion.title}
+                                            >
                                                 <select
                                                     id="select"
                                                     onChange={this.answerQuestion}
@@ -250,7 +266,7 @@
                                                 >
                                                     <option value="...">...</option>
                                                     {
-                                                        ArrayQuestion.choices.map((value, level) => {
+                                                        arrayQuestion.choices.map((value, level) => {
                                                             return (
                                                                 <option key={level}
                                                                         value={level}
@@ -265,9 +281,11 @@
 
                                 case 'radio':
                                     return <Wrapper classes="form-check" key={index}>
-                                        <InputRadio title={ArrayQuestion.title} >
+                                        <InputRadio
+                                            title={arrayQuestion.title}
+                                        >
                                             {
-                                                ArrayQuestion.choices.map((value, level) => {
+                                                arrayQuestion.choices.map((value, level) => {
                                                     return (
                                                         <div key={level}>
                                                             <label htmlFor={value}>
@@ -276,7 +294,7 @@
                                                                        value={level}
                                                                        onChange={this.answerQuestion}
                                                                        data-question={index}
-                                                                       name={ArrayQuestion.name}/>&nbsp;{value}</label>
+                                                                       name={arrayQuestion.name}/>&nbsp;{value}</label>
                                                         </div>
                                                     )
                                                 })
