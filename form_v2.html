@@ -129,7 +129,7 @@
 
         render() {
             return(
-                <div className={ "wrapper " + this.props.classes }>
+                <div className={ "wrapper " + this.props.classes + (!this.props.visible ? " hide" : "") }>
                     {this.props.children}
                 </div>
             )
@@ -159,7 +159,8 @@
             super(props);
             this.state = ({
                 formCompleted : false,
-                formFinish : false
+                formFinish : false,
+                formValid : false,
             });
             this.score = 0;
         }
@@ -184,25 +185,48 @@
                 })
 
                 this.setState({
-                    formFinish : true
+                    formValid : true
                 })
             }
 
             e.preventDefault();
         };
 
+        handleNextQuestion = (e) => {
+
+            if (this.props.answers.length < this.props.nbrAnswer) {
+                this.props.parentFunctionNext();
+
+            } else {
+                this.setState({
+                    formCompleted : false
+                })
+
+                this.setState({
+                    formFinish : true
+                })
+            }
+
+
+        }
+
         render() {
             return (
                 <div>
                     <div>
                         <div className="wrapper form-check">
-                            <Result hidden={this.state.formFinish ? '' : 'hide' } score={this.score} />
+                            <Result hidden={this.state.formValid ? '' : 'hide' } score={this.score} />
                         </div>
 
-                        { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à toutes les questions !</div> }
+                        { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à la question !</div> }
                         <form onSubmit={this.handleSubmit}>
                             {this.props.children}
-                            <button type="submit" className="btn btn-primary"  disabled={this.state.formFinish ? 'disabled' : '' } >Submit</button>
+                            <a href="#"
+                               className={ 'btn btn-primary ' + (!this.props.nextButtonDisabled ? 'disabled' : '') + (this.props.answers.length < this.props.nbrAnswer ? '' : 'hide') }
+                               onClick={this.handleNextQuestion}>Next</a>
+                            <button type="submit"
+                                    className={'btn btn-primary ' + (this.props.answers.length === this.props.nbrAnswer  ? '' : 'hide') }
+                                    >Valider</button>
                         </form>
                     </div>
                 </div>
@@ -215,7 +239,9 @@
         constructor(props) {
             super(props);
             this.state = ({
-                numberQuestion : 0,
+                numberQuestion :0,
+                questionMax : Object.keys(questions).length,
+                nextQuestion: false,
                 answerQ: [],
                 feedBackActive: []
             })
@@ -237,28 +263,54 @@
                     )
                 }))
             }
+            this.nextQuestionEnabled(1);
         }
 
         feedbackActivated = (e) => {
             this.setState((prevState, props) => ({ feedBackActive: [...prevState.feedBackActive,   e   ] }) );
         }
 
-        render (){
+        nextQuestion = (e) => {
+            this.setState((prevState, props) => ({ numberQuestion:  (prevState.numberQuestion  < this.state.questionMax-1 ? prevState.numberQuestion += 1 : prevState.numberQuestion )    }) );
+            this.nextQuestionEnabled(0);
+        }
 
+        nextQuestionEnabled = (e) => {
+
+            e === 1 ?
+
+                this.setState(prevState => ({
+                    nextQuestion: true
+                }))
+
+                :
+                this.setState(prevState => ({
+                    nextQuestion: false
+                }))
+            ;
+        }
+
+        render (){
             return (
                 <Form answers={this.state.answerQ}
                       nbrAnswer={myArray.length}
                       functionParent={this.feedbackActivated}
+                      parentFunctionNext={this.nextQuestion}
+                      nextButtonDisabled={this.state.nextQuestion}
                 >
                     {
                         Object.keys(questions).map((value, index)  => {
 
                             const arrayQuestion = questions[value];
-
+                            let visibled = 0;
+                            visibled = index === this.state.numberQuestion ?  1 : 0;
                             switch (arrayQuestion.type) {
+
                                 case 'select':
                                     return (
-                                        <Wrapper classes="form-check" key={index}>
+                                        <Wrapper classes={ 'form-check question_' + `${index}` }
+                                                 visible={visibled}
+                                                 key={index}>
                                             <InputSelect
                                                 title={arrayQuestion.title}
                                                 feedback={arrayQuestion.feedback}
@@ -270,7 +322,6 @@
                                                     onChange={this.answerQuestion}
                                                     data-question={index}
                                                 >
-                                                    <option value="...">...</option>
                                                     {
                                                         arrayQuestion.choices.map((value, level) => {
                                                             return (
@@ -286,7 +337,9 @@
                                     );
 
                                 case 'radio':
-                                    return <Wrapper classes="form-check" key={index}>
+                                    return  <Wrapper classes={ 'form-check question_' + `${index}` }
+                                                    visible={visibled}
+                                                    key={index}>
                                         <InputRadio
                                             title={arrayQuestion.title}
                                             feedback={arrayQuestion.feedback}
