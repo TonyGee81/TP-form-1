@@ -206,9 +206,17 @@
                     formFinish : true
                 })
             }
-
-
         }
+
+        handlePreviousQuestion = (e) => {
+            this.props.parentFunctionPrevious();
+            this.setState({
+                formCompleted : false,
+                formFinish : false
+            })
+        }
+
+
 
         render() {
             return (
@@ -219,8 +227,12 @@
                         </div>
 
                         { !this.state.formCompleted ? '' : <div className="alert alert-danger">Veuillez répondre à la question !</div> }
-                        <form onSubmit={this.handleSubmit}>
+                        <form onSubmit={this.handleSubmit} className={!this.state.formValid ? '' : 'hide' }>
                             {this.props.children}
+
+                            <a href="#"
+                               className={ 'btn mr-2 btn-primary ' + (!this.props.nextButtonDisabled ? 'disabled' : '') + (this.props.answers.length < this.props.nbrAnswer ? '' : 'hide') }
+                               onClick={this.handlePreviousQuestion}>Previous</a>
                             <a href="#"
                                className={ 'btn btn-primary ' + (!this.props.nextButtonDisabled ? 'disabled' : '') + (this.props.answers.length < this.props.nbrAnswer ? '' : 'hide') }
                                onClick={this.handleNextQuestion}>Next</a>
@@ -275,6 +287,11 @@
             this.nextQuestionEnabled(0);
         }
 
+        previousQuestion = (e) => {
+            this.setState((prevState, props) => ({ numberQuestion:  (prevState.numberQuestion  > 0 ? prevState.numberQuestion -= 1 : prevState.numberQuestion )    }) );
+            // this.nextQuestionEnabled(0);
+        }
+
         nextQuestionEnabled = (e) => {
 
             e === 1 ?
@@ -296,6 +313,7 @@
                       nbrAnswer={myArray.length}
                       functionParent={this.feedbackActivated}
                       parentFunctionNext={this.nextQuestion}
+                      parentFunctionPrevious={this.previousQuestion}
                       nextButtonDisabled={this.state.nextQuestion}
                 >
                     {
