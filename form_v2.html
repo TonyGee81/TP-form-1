@@ -148,7 +148,6 @@
                         </div>
                     </div>
                 </div>
-
             )
         }
     }
@@ -293,18 +292,7 @@
         }
 
         nextQuestionEnabled = (e) => {
-
-            e === 1 ?
-
-                this.setState(prevState => ({
-                    nextQuestion: true
-                }))
-
-                :
-                this.setState(prevState => ({
-                    nextQuestion: false
-                }))
-            ;
+            e === 1 ? this.setState(prevState => ({ nextQuestion: true })) : this.setState(prevState => ({ nextQuestion: false  }));
         }
 
         render (){
